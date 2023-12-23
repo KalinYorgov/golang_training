@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
 
 var pl = fmt.Println
@@ -64,6 +65,156 @@ func getAverage(nums ...float64) float64 {
 		sum += val
 	}
 	return (sum / NumSize)
+}
+
+type MyConstraint interface {
+	int | float64
+}
+
+func getSumGen[T MyConstraint](x T, y T) T {
+	return x + y
+}
+
+type customer struct {
+	name    string
+	address string
+	bal     float64
+}
+
+func getCustInfo(c customer) {
+	fmt.Printf("%s owes us $%.2f\n", c.name, c.bal)
+}
+
+func newCustAdd(c *customer, address string) {
+	c.address = address
+}
+
+type rectangle struct {
+	length, height float64
+}
+
+func (r rectangle) Area() float64 {
+	return r.length * r.height
+}
+
+type contact struct {
+	fName string
+	lName string
+	phone string
+}
+
+type business struct {
+	name    string
+	address string
+	contact
+}
+
+func (b business) info() {
+	fmt.Printf("Contract at %s is %s %s\n", b.name, b.contact.fName, b.contact.lName)
+}
+
+type Tsp float64
+type TBs float64
+type ML float64
+
+func tspToML(tsp Tsp) ML {
+	return ML(tsp * 4.929)
+}
+
+func TBToML(tsp Tsp) ML {
+	return ML(tsp * 14.787)
+}
+
+func (tsp Tsp) ToMLs() ML {
+	return ML(tsp * 4.929)
+}
+
+func (tbs TBs) ToMLs() ML {
+	return ML(tbs * 14.787)
+}
+
+type Animal interface { // interface
+	AngrySound()
+	HappySound()
+}
+
+type Cat string
+
+func (c Cat) Attack() {
+	pl("cat Attacks its Prey")
+}
+
+func (c Cat) Name() string {
+	return string(c)
+}
+
+func (c Cat) AngrySound() {
+	pl("Cat says Hissssss")
+}
+
+func (c Cat) HappySound() {
+	pl("Cat says Purrrrr")
+}
+
+func printTo15() {
+	for i := 0; i <= 15; i++ {
+		pl("Fun 1 :", i)
+	}
+}
+
+func printTo10() {
+	for i := 0; i <= 10; i++ {
+		pl("Fun 2 :", i)
+	}
+}
+
+func nums1(channel chan int) {
+	channel <- 1
+	channel <- 2
+	channel <- 3
+}
+
+func nums2(channel chan int) {
+	channel <- 4
+	channel <- 5
+	channel <- 6
+}
+
+type Account struct {
+	balance int
+	lock    sync.Mutex
+}
+
+func (a *Account) GetBalance() int {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+	return a.balance
+}
+
+func (a *Account) Withdraw(v int) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+	if v > a.balance {
+		pl("Not enough money")
+	} else {
+		fmt.Printf("%d withdrawn : Balance : %d\n", v, a.balance)
+	}
+	a.balance -= v
+}
+
+func useFunc(f func(int, int) int, x, y int) {
+	pl("Answer :", f(x, y))
+}
+
+func sumvals(x, y int) int {
+	return x + y
+}
+
+func factorial(num int) int {
+	if num == 0 {
+		return 1
+	}
+	return num * factorial(num-1)
 }
 
 func main() {
@@ -372,23 +523,125 @@ func main() {
 
 	// var myMap map [keyType]valueType
 
-	var heroes map[string]string
-	heroes = make(map[string]string)
+	// var heroes map[string]string
+	// heroes = make(map[string]string)
 
-	villians := make(map[string]string)
-	heroes["Batman"] = "Bruce Wayne"
-	heroes["Superman"] = "Clark Kent"
-	heroes["The Flash"] = "Barry Allen"
-	villians["Lex Luther"] = "Lex Luthor"
+	// villians := make(map[string]string)
+	// heroes["Batman"] = "Bruce Wayne"
+	// heroes["Superman"] = "Clark Kent"
+	// heroes["The Flash"] = "Barry Allen"
+	// villians["Lex Luther"] = "Lex Luthor"
 
-	superPets := map[int]string{1: "Krypto",
-		2: "Bat-Cow"}
-	fmt.Printf("Batman is %v\n", heroes["Batman"])
-	pl("Chip :", superPets[3])
-	_, ok := superPets[3]
-	pl("Is there a 3rd pet: ", ok)
-	for k, v := range heroes {
-		fmt.Printf("%s is %s\n", k, v)
-	}
-	delete(heroes, "The Flash")
+	// superPets := map[int]string{1: "Krypto",
+	// 	2: "Bat-Cow"}
+	// fmt.Printf("Batman is %v\n", heroes["Batman"])
+	// pl("Chip :", superPets[3])
+	// _, ok := superPets[3]
+	// pl("Is there a 3rd pet: ", ok)
+	// for k, v := range heroes {
+	// 	fmt.Printf("%s is %s\n", k, v)
+	// }
+	// delete(heroes, "The Flash")
+
+	// pl("5 + 4 =", getSumGen(5, 4))
+	// pl("5.6 + 4.7 =", getSumGen(5.6, 4.7))
+
+	// var tS customer
+	// tS.name = "Tom Smith"
+	// tS.address = "5 main st"
+	// tS.bal = 234.56
+	// getCustInfo(tS)
+	// newCustAdd(&tS, "123 South st")
+	// pl("Address :", tS.address)
+	// sS := customer{"Sally Smith", "123 Main", 0.0}
+	// pl("Name :", sS.name)
+
+	// rect1 := rectangle{10.0, 15.0}
+	// pl("Rect Area :", rect1.Area())
+
+	// con1 := contact{
+	// 	"James",
+	// 	"Wang",
+	// 	"555-555-5555",
+	// }
+	// bus1 := business{
+	// 	"ABC Plumbing",
+	// 	"234 North St",
+	// 	con1,
+	// }
+	// bus1.info()
+
+	// ml1 := ML(Tsp(3) * 4.92)
+	// fmt.Printf("3 tsps = %.2f ML\n", ml1)
+	// ml2 := ML(TBs(3) * 14.79)
+	// fmt.Printf("3 Tbs = %.2f ML\n", ml2)
+	// pl("2 tsp + 4tsp =", Tsp(2), Tsp(4))
+	// pl("2 tsp > 4tsp =", Tsp(2) > Tsp(4))
+	// fmt.Printf("3 tsp = %.2f mL\n", tspToML(3))
+	// fmt.Printf("3 tsp = %.2f mL\n", TBToML(3))
+
+	// fmt.Printf("3 tsp = %.2f mL\n", Tsp(3).ToMLs())
+
+	// tsp1 := Tsp(3)
+	// fmt.Printf("%.2f tsps = %.2f mL\n", tsp1, tsp1.ToMLs())
+
+	// var kitty Animal
+	// kitty = Cat("Kitty")
+	// kitty.AngrySound()
+
+	// var kitty2 Cat = kitty.(Cat)
+	// kitty2.Attack()
+	// pl("Cats Name :", kitty2.Name())
+	// go printTo15()
+	// go printTo10()
+	// time.Sleep(2 * time.Second)
+
+	// channel1 := make(chan int)
+	// channel2 := make(chan int)
+
+	// go nums1(channel1)
+	// go nums2(channel2)
+
+	// pl(<-channel1)
+	// pl(<-channel1)
+	// pl(<-channel1)
+	// pl(<-channel2)
+	// pl(<-channel2)
+	// pl(<-channel2)
+
+	// var acct Account
+	// acct.balance = 100
+	// pl("Balance :", acct.GetBalance())
+	// for i := 0; i < 12; i++ {
+	// 	go acct.Withdraw(10)
+	// }
+	// time.Sleep(2 * time.Second)
+
+	// intSum := func(x, y int) int { return x + y }
+	// pl("5 + 4 =", intSum(5, 4))
+	// samp1 := 1
+	// changeVar := func() {
+	// 	samp1 += 1
+	// }
+	// changeVar()
+	// pl("samp1 =", samp1)
+
+	// useFunc(sumvals, 5, 8)
+
+	// pl("Factorial 4 =", factorial(4))
+
+	// reStr := "The ape was at the apex"
+	// match, _ := regexp.MatchString("(ape[^ ]?", reStr)
+	// pl(match)
+
+	// reStr2 := "Cat rat mat fat pat"
+	// r, _ := regexp.Compile("([crmfp]at)")
+	// pl("MatchString :", r.MatchString(reStr2))
+	// pl("FindString :", r.FindString(reStr2))
+	// pl("Index :", r.FindStringIndex(reStr2))
+	// pl("All String :", r.FindAllString(reStr2, -1))
+	// pl("1st 2 Strings :", r.FindAllString(reStr2, 2))
+	// pl("All Submatch Index :", r.FindAllStringSubmatchIndex(reStr2, -1))
+	// pl("Replace Words All :", r.ReplaceAllString(reStr2, "Dog"))
+
 }
